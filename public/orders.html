@@ -21,37 +21,36 @@
           }
       </style>
 <!--      <link rel="stylesheet" href="./style.css" />-->
-
   </head>
   <body>
     <div id="app">
       <div class="content">
-          <h2>Products</h2>
+          <h2>Orders</h2>
           <ul>
-            <li v-for="product in products" :key="product.id">
-              {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
-            </li>
+              <li v-for="order in orders" :key="order.id">
+                  Order #{{ order.id }}: {{ order.customer }} - {{ order.status }}
+              </li>
           </ul>
-        </div>
+      </div>
     </div>
 
     <script>
       const app = Vue.createApp({
         data() {
           return {
-            products: [],
+            orders: [],
           };
         },
         methods: {
           fetchData() {
-			  axios.get('http://localhost:3000/api/products').then((res) => {
-				  this.products = res.data;
+			  axios.get('http://localhost:3000/api/orders').then((res) => {
+				  this.orders = res.data;
 			  });
           },
         },
         mounted() {
           this.fetchData();
-		  window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
+			window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
         },
       });
       app.mount("#app");

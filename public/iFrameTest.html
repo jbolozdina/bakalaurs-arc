@@ -68,54 +68,32 @@
                 v-if="currentSection === 'products' || currentSection === 'all'"
                 style="border-style: dotted"
         >
-          <h2>Products</h2>
-          <ul>
-            <li v-for="product in products" :key="product.id">
-              {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
-            </li>
-          </ul>
-        </div>
-
-        <div>
-            <iframe src="http://localhost:3001/products" style="width: 100%; height: 100%"></iframe>
-        </div>
+            <div>
+                <iframe id="i-products" src="http://localhost:3001/products" style="width: 100%; height: 100%"></iframe>
+                <button @click="labdieniFrameProducts()">labdien</button>
+            </div>
 <!--          <iframe src="https://google.com" width="400" height="400"></iframe>-->
+        </div>
 
         <div v-if="currentSection === 'orders' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px;">
-          <h2>Orders</h2>
-          <ul>
-            <li v-for="order in orders" :key="order.id">
-              Order #{{ order.id }}: {{ order.customer }} - {{ order.status }}
-            </li>
-          </ul>
+            <div>
+                <iframe id="i-orders" src="http://localhost:3002/orders" style="width: 100%; height: 100%"></iframe>
+                <button @click="labdieniFrameOrders()">labdien</button>
+            </div>
         </div>
 
         <div v-if="currentSection === 'insights' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px;">
-          <h2>Customer Analytics</h2>
-          <p>Total Customers: {{ insights.total_customers }}</p>
-          <p>New Customers: {{ insights.new_customers }}</p>
-          <p>Monthly Active: {{ insights.monthly_active }}</p>
+            <div>
+                <iframe id="i-analytics" src="http://localhost:3003/analytics" style="width: 100%; height: 100%"></iframe>
+                <button @click="labdieniFrameAnalytics()">labdien</button>
+            </div>
         </div>
 
-        <div v-if="currentSection === 'marketing' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px;">
-          <h2>Marketing</h2>
-          <div v-if="marketing.promoCodes.length">
-            <h3>Promo Codes</h3>
-            <ul>
-              <li v-for="promo in marketing.promoCodes" :key="promo.id">
-                {{ promo.code }} - {{ promo.description }} ({{
-                promo.discount_percentage }}% off)
-              </li>
-            </ul>
-          </div>
-          <div v-if="marketing.banners.length">
-            <h3>Banners</h3>
-            <ul>
-              <li v-for="banner in marketing.banners" :key="banner.id">
-                <strong>{{ banner.title }}</strong>: {{ banner.message }}
-              </li>
-            </ul>
-          </div>
+        <div v-if="currentSection === 'marketing' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px; height:100%">
+            <div>
+                <iframe id="i-marketing" src="http://localhost:3004/marketing" style="width: 100%; height: 100%"></iframe>
+                <button @click="labdieniFrameMarketing()">labdien</button>
+            </div>
         </div>
       </div>
     </div>
@@ -130,9 +108,34 @@
             insights: {},
             marketing: { promoCodes: [], banners: [] },
             showDropdown: false,
+              iProductsWindow: null,
           };
         },
         methods: {
+			labdieniFrameProducts() {
+				document.getElementById('i-products').contentWindow.postMessage(
+					{ message: 'labdien!', isUserLoggedIn: true },
+                    "http://localhost:3001"
+                );
+            },
+			labdieniFrameOrders() {
+				document.getElementById('i-orders').contentWindow.postMessage(
+					{ message: 'labdien!', isUserLoggedIn: true },
+					"http://localhost:3002"
+				);
+			},
+			labdieniFrameAnalytics() {
+				document.getElementById('i-analytics').contentWindow.postMessage(
+					{ message: 'labdien!', isUserLoggedIn: true },
+					"http://localhost:3003"
+				);
+			},
+			labdieniFrameMarketing() {
+				document.getElementById('i-marketing').contentWindow.postMessage(
+					{ message: 'labdien!', isUserLoggedIn: true },
+					"http://localhost:3004"
+				);
+			},
 			logout() {
 				const url = "/api/revoke-me-auth-cookie";
 				axios.delete(url).then((res) => {
@@ -199,5 +202,6 @@
       });
       app.mount("#app");
     </script>
+
   </body>
 </html>

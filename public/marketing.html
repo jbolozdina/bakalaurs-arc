@@ -26,32 +26,44 @@
   <body>
     <div id="app">
       <div class="content">
-          <h2>Products</h2>
-          <ul>
-            <li v-for="product in products" :key="product.id">
-              {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
-            </li>
-          </ul>
-        </div>
+          <h2>Marketing</h2>
+          <div v-if="marketing.promoCodes.length">
+              <h3>Promo Codes</h3>
+              <ul>
+                  <li v-for="promo in marketing.promoCodes" :key="promo.id">
+                      {{ promo.code }} - {{ promo.description }} ({{
+                          promo.discount_percentage }}% off)
+                  </li>
+              </ul>
+          </div>
+          <div v-if="marketing.banners.length">
+              <h3>Banners</h3>
+              <ul>
+                  <li v-for="banner in marketing.banners" :key="banner.id">
+                      <strong>{{ banner.title }}</strong>: {{ banner.message }}
+                  </li>
+              </ul>
+          </div>
+      </div>
     </div>
 
     <script>
       const app = Vue.createApp({
         data() {
           return {
-            products: [],
+            marketing: { promoCodes: [], banners: []},
           };
         },
         methods: {
           fetchData() {
-			  axios.get('http://localhost:3000/api/products').then((res) => {
-				  this.products = res.data;
+			  axios.get('http://localhost:3000/api/marketing').then((res) => {
+				  this.marketing = res.data;
 			  });
           },
         },
         mounted() {
           this.fetchData();
-		  window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
+			window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
         },
       });
       app.mount("#app");
