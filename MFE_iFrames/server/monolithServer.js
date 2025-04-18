@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const argon2 = require("argon2");
 
 const DB_SETUP_REQUIRED = true;
 
@@ -19,8 +20,8 @@ const APP_URL = `http://localhost:${PORT}`;
 // DB_PASSWORD=1234
 
 const initDB = async () => {
-  await (require("./MigrationHelper")).createTables();
-  await (require("./SeederHelper")).insertSampleData();
+  await (require("./helpers/MigrationHelper")).createTables();
+  await (require("./helpers/SeederHelper")).insertSampleData();
 };
 
 if (DB_SETUP_REQUIRED) initDB();
@@ -40,11 +41,34 @@ app.get("/", (req, res) => {
 
     return;
   }
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\index.html"));
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\multispa-router.html"));
 });
 
-app.get("/iframetest", (req, res) => {
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\iFrameTest.html"));
+app.get("/iframetest", async (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) {
+    res.redirect("/no-login");
+
+    return;
+  }
+
+  let dbSessionDataRows = await MySqlHelper.connection
+            .promise()
+            .query(`SELECT expires_at FROM session_cookies WHERE hash = ${sessionId}`);
+
+  if (
+      !dbSessionDataRows?.length
+      || Date.now() > parseInt((new Date(dbSessionDataRows[0].expires_at).getTime() / 1000).toFixed(0))
+  ) {
+    res.redirect("/no-login");
+
+    return;
+  }
+
+  // unsupported
+  // await MySqlHelper.connection.promise().query(`UPDATE session_cookies SET last_access = ${Date.now()} WHERE hash = ${sessionId}`);
+
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\iframe-test.html"));
 });
 
 app.get("/no-login", (req, res) => {
@@ -52,21 +76,49 @@ app.get("/no-login", (req, res) => {
 });
 
 app.use(express.static("public"));
+app.use(express.json());
 
-// API Endpoints
 
-// 1. Products endpoint
-
-const MySqlHelper = require("./MySqlHelper");
+const MySqlHelper = require("./helpers/MySqlHelper");
 MySqlHelper.openConnection();
 
+app.post("/api/login", async (req, res) => {
+  console.log(req.body);
+  const [userIdRow] = await MySqlHelper.connection
+      .promise()
+      .query(`SELECT id 
+              FROM users 
+              WHERE username = '${req.body.username}' 
+                AND password = '${req.body.password}'
+      `);
+  console.log(userIdRow);
+  if (!userIdRow.length) {
+    res.status(500).json({ message: 'Incorrect data!' });
+    return;
+  }
+
+  const sessHash = await argon2.hash("session");
+  await MySqlHelper.connection.promise().query(`
+                INSERT INTO session_cookies (hash, user_id)
+                VALUES ('${sessHash}', ${userIdRow[0].id})
+			`);
+  res.cookie('sessionId', sessHash);
+
+  res.json({ message: 'authenticated & cookie baked in!', data: { userId: userIdRow[0].id } });
+})
+
 app.get("/api/gimme-auth-cookie", async (req, res) => {
-  res.cookie('sessionId', 123)
+  res.cookie('sessionId', 123);
+  // await MySqlHelper.connection.promise().query(`
+  //   INSERT INTO session_cookies (hash, user_id)
+  //   VALUES ('2024-11-01', 240, 15, 180)
+  // `);
+
   res.json({ success: 1 });
 });
 
 app.delete("/api/revoke-me-auth-cookie", async (req, res) => {
-  res.clearCookie('sessionId')
+  res.clearCookie('sessionId');
   res.json({ success: 1 });
 });
 
@@ -119,8 +171,6 @@ app.get("/api/orders", async (req, res) => {
   }
 });
 
-// 3. Customer Insights endpoint
-
 app.get("/api/customer-insights", async (req, res) => {
   try {
     const [rows] = await MySqlHelper.connection
@@ -131,8 +181,6 @@ app.get("/api/customer-insights", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-// 4. Marketing endpoint (combines promo codes and banners)
 
 app.get("/api/marketing", async (req, res) => {
   try {

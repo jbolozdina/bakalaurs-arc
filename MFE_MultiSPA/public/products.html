@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <title>E-Commerce Dashboard</title>
+      <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      />
     <script src="https://unpkg.com/vue@3"></script>
+    <script src="http://localhost:3000/header.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <style>
           body {
@@ -20,37 +25,39 @@
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           }
       </style>
-<!--      <link rel="stylesheet" href="./style.css" />-->
+      <link rel="stylesheet" href="http://localhost:3000/style.css" />
+
   </head>
   <body>
     <div id="app">
+      <div id="header"></div>
       <div class="content">
-          <h2>Orders</h2>
+          <h2>Products</h2>
           <ul>
-              <li v-for="order in orders" :key="order.id">
-                  Order #{{ order.id }}: {{ order.customer }} - {{ order.status }}
-              </li>
+            <li v-for="product in products" :key="product.id">
+              {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
+            </li>
           </ul>
-      </div>
+        </div>
     </div>
 
     <script>
       const app = Vue.createApp({
         data() {
           return {
-            orders: [],
+            products: [],
           };
         },
         methods: {
           fetchData() {
-			  axios.get('http://localhost:3000/api/orders').then((res) => {
-				  this.orders = res.data;
+			  axios.get('http://localhost:3000/api/products').then((res) => {
+				  this.products = res.data;
 			  });
           },
         },
         mounted() {
           this.fetchData();
-			window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
+		  window.renderHeader('header');
         },
       });
       app.mount("#app");

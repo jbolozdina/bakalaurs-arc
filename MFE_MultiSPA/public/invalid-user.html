@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>[Unlogged] E-Commerce Dashboard</title>
+    <!-- Vue and Axios -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Font Awesome for the user icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+      <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Vue App -->
+    <div id="app" style="width: 100%; height: 100%" class="content">
+        <p>You're invalid! (No active user session)</p>
+        <button @click="isModalShown = true">Log in</button>
+        <button @click="addSecretCookie">Or assign yourself a secret cookie && go to dashboard</button>
+        <div v-if="isModalShown" style="position: absolute; width: 50%; height: 500px; background: white; top: 128px">
+            <button @click="isModalShown = false">X</button>
+            <p>user</p>
+            <input v-model="username" type="text">
+            <p>pass</p>
+            <input v-model="password" type="text">
+            <button @click="attemptLogin">log in</button>
+        </div>
+    </div>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+			  isModalShown: false,
+              username: null,
+              password: null,
+          };
+        },
+        methods: {
+			addSecretCookie() {
+				console.error('unsupported');
+				return;
+
+				const url = "http://localhost:3000/api/gimme-auth-cookie";
+				axios.get(url).then((res) => {
+					console.warn('secret cookie dookie acquired');
+				});
+				setTimeout(() => {
+					location.href = "http://localhost:3000/multispa-router";
+                }, 100)
+			},
+            attemptLogin() {
+				const url = "http://localhost:3000/api/login";
+				axios.post(url, { username: this.username, password: this.password }).then((res) => {
+					console.log(res.data);
+                    setTimeout(() => {
+                        location.href = "http://localhost:3000/multispa-router";
+                    }, 100)
+                    },
+                    (err) => { console.error(err) }
+                );
+            },
+		}
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

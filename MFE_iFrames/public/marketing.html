@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>E-Commerce Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <style>
+          body {
+              margin: 0;
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+          }
+          .content {
+              background-color: #fff;
+              //margin: 0 auto;
+              padding: 1px 0px 1px 0px;
+              //max-width: 800px;
+              border-radius: 4px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          }
+      </style>
+<!--      <link rel="stylesheet" href="./style.css" />-->
+
+  </head>
+  <body>
+    <div id="app">
+      <div class="content">
+          <h2>Marketing</h2>
+          <div v-if="marketing.promoCodes.length">
+              <h3>Promo Codes</h3>
+              <ul>
+                  <li v-for="promo in marketing.promoCodes" :key="promo.id">
+                      {{ promo.code }} - {{ promo.description }} ({{
+                          promo.discount_percentage }}% off)
+                  </li>
+              </ul>
+          </div>
+          <div v-if="marketing.banners.length">
+              <h3>Banners</h3>
+              <ul>
+                  <li v-for="banner in marketing.banners" :key="banner.id">
+                      <strong>{{ banner.title }}</strong>: {{ banner.message }}
+                  </li>
+              </ul>
+          </div>
+      </div>
+    </div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            marketing: { promoCodes: [], banners: [] },
+          };
+        },
+        methods: {
+          fetchData() {
+			  axios.get('http://localhost:3000/api/marketing').then((res) => {
+				  this.marketing = res.data;
+			  });
+          },
+        },
+        mounted() {
+          this.fetchData();
+			window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

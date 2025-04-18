@@ -26,24 +26,10 @@
   <body>
     <div id="app">
       <div class="content">
-          <h2>Marketing</h2>
-          <div v-if="marketing.promoCodes.length">
-              <h3>Promo Codes</h3>
-              <ul>
-                  <li v-for="promo in marketing.promoCodes" :key="promo.id">
-                      {{ promo.code }} - {{ promo.description }} ({{
-                          promo.discount_percentage }}% off)
-                  </li>
-              </ul>
-          </div>
-          <div v-if="marketing.banners.length">
-              <h3>Banners</h3>
-              <ul>
-                  <li v-for="banner in marketing.banners" :key="banner.id">
-                      <strong>{{ banner.title }}</strong>: {{ banner.message }}
-                  </li>
-              </ul>
-          </div>
+          <h2>Customer Analytics</h2>
+          <p>Total Customers: {{ insights.total_customers }}</p>
+          <p>New Customers: {{ insights.new_customers }}</p>
+          <p>Monthly Active: {{ insights.monthly_active }}</p>
       </div>
     </div>
 
@@ -51,13 +37,14 @@
       const app = Vue.createApp({
         data() {
           return {
-            marketing: { promoCodes: [], banners: []},
+            insights: {},
           };
         },
         methods: {
           fetchData() {
-			  axios.get('http://localhost:3000/api/marketing').then((res) => {
-				  this.marketing = res.data;
+			  axios.get('http://localhost:3000/api/customer-insights').then((res) => {
+				  this.insights = res.data[0];
+				  console.log(res.data);
 			  });
           },
         },

@@ -1,10 +1,12 @@
 {
   "type": "commonjs",
   "dependencies": {
+    "argon2": "^0.41.1",
     "axios": "^1.8.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.5",
     "mysql2": "^3.14.0",
     "sabik": "^0.2.4",
     "vue": "^3.5.13"
