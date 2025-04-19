@@ -35,6 +35,7 @@ const cors = require('cors');
 const allowedOrigins = [
     APP_URL,
   'http://localhost:3001', // products
+  // 'http://127.0.0.1:3001', // products alternative domain
   'http://localhost:3002', // orders
   'http://localhost:3003', // analytics
   'http://localhost:3004', // marketing
@@ -61,10 +62,6 @@ app.get("/header.js", (req, res) => {
 app.get("/style.css", (req, res) => {
   res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\style.css"));
 });
-
-// TODO -----------------------------------------------------
-// TODO -----------------------------------------------------
-// Implement common header with logged in user, back to router button
 
 async function validateSession(req, res, cb) {
   const sessionId = req.cookies.sessionId;
@@ -147,7 +144,7 @@ app.post("/api/login", async (req, res) => {
 			`);
   res.cookie('sessionId', sessHash,
       {
-        sameSite: 'lax'   // ← allow cross-origin access
+        sameSite: 'lax'
   }
   );
 
@@ -158,6 +155,10 @@ app.get("/api/revoke-me-auth-cookie", async (req, res) => {
   console.log('clearing cookie', req.cookies);
   res.clearCookie('sessionId');
   res.json({ success: 1 });
+});
+
+app.get("/api/SessionHelper.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "helpers", "SessionHelper.js"));
 });
 
 app.get("/api/products", async (req, res) => {
@@ -206,4 +207,4 @@ app.get("/api/marketing", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at ${APP_URL}`);
 });
-app.on('close', () => MySqlHelper.closeConnection());
+process.on('SIGINT', () => MySqlHelper.closeConnection());

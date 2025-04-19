@@ -1,32 +1,47 @@
 const express = require("express");
 const app = express();
-const path = require("path");
-const axios = require("axios");
 const cookieParser = require('cookie-parser');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+let getSessionValidity;
+(async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/SessionHelper.js');
+    const helperCode = response.data;
+
+    // Create a temporary file to store the downloaded code
+    const tempDir = path.join(__dirname, 'temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+
+    const tempFile = path.join(tempDir, 'SessionHelper.js');
+    fs.writeFileSync(tempFile, helperCode);
+
+    // Require the downloaded file
+    const SessionHelper = require('./temp/SessionHelper.js');
+    getSessionValidity = SessionHelper.getSessionValidity;
+
+    console.log('Successfully loaded SessionHelper.js from monolith server');
+  } catch (error) {
+    console.error('Failed to download SessionHelper.js:', error);
+    process.exit(1);
+  }
+})();
 
 /** -- CONNECT CONFIG DETAILS -- */
 const PORT = 3001;
-const APP_URL = `http://localhost:${PORT}`;
+const APP_URL = `http://localhost:${PORT} && http://pmfe.test:${PORT}`;
 /** -- CONNECT CONFIG DETAILS -- */
 
 app.use(cookieParser());
 
 app.get("/products", async (req, res) => {
-  let isSessionValid = false;
-  try {
-    const requestData = (await axios.get('http://localhost:3000/api/is-session-valid', {
-          headers: {
-            Cookie: req.headers.cookie || "",
-          }
-        })
-        );
-    isSessionValid = requestData.data.isValid;
-  } catch (e) {
-    console.error(e);
-  }
+  const isSessionValid = await getSessionValidity(req);
 
   if (!isSessionValid) {
-
     return res.redirect('http://localhost:3000/no-login');
   }
 
@@ -36,3 +51,15 @@ app.get("/products", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`[MFE] Products running at ${APP_URL}`);
 });
+
+process.on(
+  'SIGINT',
+  () => {
+    console.log('Removing', path.join(__dirname, 'temp'));
+    fs.rmSync(
+      path.join(__dirname, 'temp'),
+      { recursive: true, force: true },
+      (err) => { console.log(err) }
+    );
+    process.exit(0);
+  });

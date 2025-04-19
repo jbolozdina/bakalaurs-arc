@@ -5,7 +5,7 @@
     template: `
             <header>
                 <div class="header-left" style="display: flex">
-                    <button style="margin-right: 8px" @click="backToNav"><</button>
+                    <button v-if="!isOnRouterPage()" style="margin-right: 8px" @click="backToNav"><</button>
                     <h1>E‑Commerce Dashboard</h1>
                 </div>
                 <div class="header-right" @click="toggleDropdown">
@@ -19,9 +19,14 @@
         `,
     setup() {
       const showDropdown = ref(false);
+      const routerLink = 'http://localhost:3000/multispa-router';
+
+      function isOnRouterPage() {
+        return location.href === routerLink;
+      }
 
       function backToNav() {
-        location.href = "http://localhost:3000/multispa-router";
+        location.href = routerLink;
       }
 
       function toggleDropdown(event) {
@@ -50,6 +55,7 @@
       });
 
       return {
+        isOnRouterPage,
         backToNav,
         showDropdown,
         toggleDropdown,
@@ -58,7 +64,6 @@
     },
   };
 
-  // Expose function to global scope
   window.renderHeader = function (targetId) {
     createApp(HeaderWidget).mount(document.getElementById(targetId));
   };
