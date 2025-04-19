@@ -1,0 +1,15 @@
+{
+  "name": "mfe-module-federation",
+  "version": "1.0.0",
+  "description": "Module Federation implementation of host and products applications",
+  "scripts": {
+    "start": "concurrently \"npm run start:server\" \"npm run start:host\" \"npm run start:products\"",
+    "start:server": "cd server && npm start",
+    "start:host": "cd host && npm start",
+    "start:products": "cd products && npm start",
+    "install:all": "npm install && cd host && npm install && cd ../products && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
