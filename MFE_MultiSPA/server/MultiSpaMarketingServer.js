@@ -50,14 +50,14 @@ app.listen(PORT, () => {
   console.log(`[MFE] Marketing running at ${APP_URL}`);
 });
 
-process.on(
-  'SIGINT',
-  () => {
-    console.log('Removing', path.join(__dirname, 'temp'));
-    fs.rmSync(
-      path.join(__dirname, 'temp'),
-      { recursive: true, force: true },
-      (err) => { console.log(err) }
-    );
-    process.exit(0);
-  });
+// process.on(
+//   'SIGINT',
+//   () => {
+//     console.log('Removing', path.join(__dirname, 'temp'));
+//     fs.rmSync(
+//       path.join(__dirname, 'temp'),
+//       { recursive: true, force: true },
+//       (err) => { console.log(err) }
+//     );
+//     process.exit(0);
+//   });

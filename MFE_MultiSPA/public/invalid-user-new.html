@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>[Unlogged] E-Commerce Dashboard</title>
+    <!-- Vue and Axios -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Font Awesome for the user icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="module">
+      import { mountInvalidUserApp } from './invalid-user.vue';
+
+      document.addEventListener('DOMContentLoaded', () => {
+        mountInvalidUserApp();
+      });
+    </script>
+  </body>
+</html>

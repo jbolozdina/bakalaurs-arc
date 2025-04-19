@@ -53,7 +53,7 @@ app.listen(PORT, () => {
 });
 
 process.on(
-  'SIGINT',
+  'SIGINT', // windows CTRL+C signal
   () => {
     console.log('Removing', path.join(__dirname, 'temp'));
     fs.rmSync(

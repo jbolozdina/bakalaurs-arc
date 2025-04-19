@@ -1,10 +1,8 @@
-/* Reset margins and set a basic font */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
 }
-/* Header styles */
 header {
     background-color: #343a40;
     color: #fff;
@@ -25,7 +23,6 @@ header {
 .user-icon {
     font-size: 24px;
 }
-/* Dropdown menu styles */
 .dropdown {
     position: absolute;
     right: 0;
@@ -48,7 +45,6 @@ header {
 .dropdown a:hover {
     background-color: #f1f1f1;
 }
-/* Navigation button styles */
 .nav-buttons {
     text-align: center;
     margin: 20px 0;
@@ -71,7 +67,6 @@ header {
     background-color: #0056b3;
     font-weight: bold;
 }
-/* Content styling */
 .content {
     background-color: #fff;
     margin: 0 auto;
