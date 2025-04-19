@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-export default {
+const invalidUserLogic = {
   data() {
     return {
       isModalShown: false,

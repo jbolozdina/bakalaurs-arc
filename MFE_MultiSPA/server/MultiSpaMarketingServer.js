@@ -4,7 +4,6 @@ const path = require("path");
 const axios = require('axios');
 const fs = require('fs');
 
-// Download SessionHelper.js from monolith server
 let getSessionValidity;
 (async () => {
   try {
@@ -43,8 +42,10 @@ app.get("/marketing", async (req, res) => {
     return res.redirect('http://localhost:3000/no-login');
   }
 
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\marketing.html"));
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\marketing\\marketing.html"));
 });
+
+app.use(express.static("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\marketing"))
 
 app.listen(PORT, () => {
   console.log(`[MFE] Marketing running at ${APP_URL}`);

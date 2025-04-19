@@ -11,7 +11,6 @@ let getSessionValidity;
     const response = await axios.get('http://localhost:3000/api/SessionHelper.js');
     const helperCode = response.data;
 
-    // Create a temporary file to store the downloaded code
     const tempDir = path.join(__dirname, 'temp');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
@@ -20,7 +19,6 @@ let getSessionValidity;
     const tempFile = path.join(tempDir, 'SessionHelper.js');
     fs.writeFileSync(tempFile, helperCode);
 
-    // Require the downloaded file
     const SessionHelper = require('./temp/SessionHelper.js');
     getSessionValidity = SessionHelper.getSessionValidity;
 
@@ -45,8 +43,10 @@ app.get("/products", async (req, res) => {
     return res.redirect('http://localhost:3000/no-login');
   }
 
-  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\products.html");
+  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\products\\products.html");
 });
+
+app.use(express.static("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\products"))
 
 app.listen(PORT, () => {
   console.log(`[MFE] Products running at ${APP_URL}`);

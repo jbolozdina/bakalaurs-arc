@@ -40,8 +40,10 @@ app.get("/orders", async (req, res) => {
     return res.redirect('http://localhost:3000/no-login');
   }
 
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\orders.html"));
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\orders\\orders.html"));
 });
+
+app.use(express.static("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\orders"))
 
 app.listen(PORT, () => {
   console.log(`[MFE] Orders running at ${APP_URL}`);

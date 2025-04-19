@@ -5,8 +5,8 @@
     <title>E-Commerce Dashboard</title>
     <script src="https://unpkg.com/vue@3"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      <link rel="stylesheet" href="./style.css" />
-      <script src="header.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="header.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -17,21 +17,24 @@
       <div id="header"></div>
       <div class="content" style="display: flex; width: 100%; height: 80vh; justify-content: center; align-items: center;">
         <a class="nav-button" href="http://localhost:3001/products">
-            Products
+          Products
         </a>
-          <a class="nav-button" href="http://localhost:3002/orders">
-              Orders
-          </a>
-          <a class="nav-button" href="http://localhost:3003/analytics">
-              Customer Analytics
-          </a>
-          <a class="nav-button" href="http://localhost:3004/marketing">
-              Marketing
-          </a>
+        <a class="nav-button" href="http://localhost:3002/orders">
+          Orders
+        </a>
+        <a class="nav-button" href="http://localhost:3003/analytics">
+          Customer Analytics
+        </a>
+        <a class="nav-button" href="http://localhost:3004/marketing">
+          Marketing
+        </a>
       </div>
+    </div>
 
+    <script src="multispa-router.js"></script>
     <script>
-        window.renderHeader('header');
+      const app = Vue.createApp(multispaRouterLogic);
+      app.mount("#app");
     </script>
   </body>
 </html>

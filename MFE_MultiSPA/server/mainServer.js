@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
 const argon2 = require("argon2");
 
 const DB_SETUP_REQUIRED = true;
@@ -30,52 +29,93 @@ console.warn(__dirname);
 
 // app.use(express.static(path.join(__dirname, "public")));
 
+const cors = require('cors');
 
+// Only allow these origins to interact with cookies
+const allowedOrigins = [
+    APP_URL,
+  'http://localhost:3001', // products
+  // 'http://127.0.0.1:3001', // products alternative domain
+  'http://localhost:3002', // orders
+  'http://localhost:3003', // analytics
+  'http://localhost:3004', // marketing
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(cookieParser());
-app.use(cors());
 
-app.get("/", (req, res) => {
-  console.warn(req.cookies);
-  if (!req.cookies.sessionId) {
-    res.redirect("/no-login");
 
-    return;
-  }
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\multispa-router.html"));
+
+app.get("/header.js", (req, res) => {
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\common\\header.js"));
 });
 
-app.get("/iframetest", async (req, res) => {
-  const sessionId = req.cookies.sessionId;
-  if (!sessionId) {
-    res.redirect("/no-login");
+app.get("/style.css", (req, res) => {
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\common\\style.css"));
+});
 
-    return;
+async function validateSession(req, res, cb) {
+  const sessionId = req.cookies.sessionId;
+  console.log('validating session', sessionId);
+  if (!sessionId) {
+    cb();
+
+    return false;
   }
 
-  let dbSessionDataRows = await MySqlHelper.connection
-            .promise()
-            .query(`SELECT expires_at FROM session_cookies WHERE hash = ${sessionId}`);
+  const dbSessionDataRows = await MySqlHelper.connection
+      .promise()
+      .query(`SELECT expires_at FROM session_cookies WHERE hash = "${sessionId}"`);
+
+  console.log(Date.now(), parseInt((new Date(dbSessionDataRows[0][0].expires_at).getTime()).toFixed(0)));
 
   if (
-      !dbSessionDataRows?.length
-      || Date.now() > parseInt((new Date(dbSessionDataRows[0].expires_at).getTime() / 1000).toFixed(0))
+      dbSessionDataRows?.length
+      && Date.now() < parseInt((new Date(dbSessionDataRows[0][0].expires_at).getTime()).toFixed(0))
   ) {
-    res.redirect("/no-login");
+    return true;
+  }
 
+  cb();
+
+  return false;
+}
+
+app.get("/", (req, res) => {
+  res.redirect('/multispa-router');
+});
+
+app.get("/multispa-router", async (req, res) => {
+  const isSessionValid = await validateSession(req, res, () => { setTimeout(() => res.redirect('/no-login'), 1000); console.error("illegal/null sessionId") });
+  if (!isSessionValid) {
     return;
   }
 
   // unsupported
   // await MySqlHelper.connection.promise().query(`UPDATE session_cookies SET last_access = ${Date.now()} WHERE hash = ${sessionId}`);
 
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\iframe-test.html"));
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\main\\multispa-router.html"));
+});
+
+app.get('/api/is-session-valid', async (req, res) => {
+  console.warn(req.cookies);
+  res.json({ isValid: await validateSession(req, res, () => {})});
 });
 
 app.get("/no-login", (req, res) => {
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\public\\invalid-user.html"));
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\main\\invalid-user.html"));
 });
 
-app.use(express.static("public"));
+app.use(express.static("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_MultiSPA\\public\\main"));
 app.use(express.json());
 
 
@@ -102,55 +142,23 @@ app.post("/api/login", async (req, res) => {
                 INSERT INTO session_cookies (hash, user_id)
                 VALUES ('${sessHash}', ${userIdRow[0].id})
 			`);
-  res.cookie('sessionId', sessHash);
+  res.cookie('sessionId', sessHash,
+      {
+        sameSite: 'lax'
+  }
+  );
 
   res.json({ message: 'authenticated & cookie baked in!', data: { userId: userIdRow[0].id } });
 })
 
-app.get("/api/gimme-auth-cookie", async (req, res) => {
-  res.cookie('sessionId', 123);
-  // await MySqlHelper.connection.promise().query(`
-  //   INSERT INTO session_cookies (hash, user_id)
-  //   VALUES ('2024-11-01', 240, 15, 180)
-  // `);
-
-  res.json({ success: 1 });
-});
-
-app.delete("/api/revoke-me-auth-cookie", async (req, res) => {
+app.get("/api/revoke-me-auth-cookie", async (req, res) => {
+  console.log('clearing cookie', req.cookies);
   res.clearCookie('sessionId');
   res.json({ success: 1 });
 });
 
-app.get("/api/dashboard/all-data", async (req, res) => {
-  try {
-    let [rows] = await MySqlHelper.connection.promise().query("SELECT * FROM products");
-    const products = rows;
-    [rows] = await MySqlHelper.connection.promise().query("SELECT * FROM orders");
-    const orders = rows;
-    [rows] = await MySqlHelper.connection
-        .promise()
-        .query("SELECT * FROM customer_insights");
-    const insights = rows[0];
-    [rows] = await MySqlHelper.connection
-        .promise()
-        .query("SELECT * FROM promo_codes");
-    const promoCodes = rows;
-    [rows] = await MySqlHelper.connection
-        .promise()
-        .query("SELECT * FROM banners");
-    const banners = rows;
-    res.json({
-      products,
-      orders,
-      insights,
-      promoCodes,
-      banners,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
+app.get("/api/SessionHelper.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "helpers", "SessionHelper.js"));
 });
 
 app.get("/api/products", async (req, res) => {
@@ -199,4 +207,4 @@ app.get("/api/marketing", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at ${APP_URL}`);
 });
-app.on('close', () => MySqlHelper.closeConnection());
+process.on('SIGINT', () => {MySqlHelper.closeConnection(); process.exit(0)});

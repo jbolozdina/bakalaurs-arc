@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>E-Commerce Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="http://localhost:3000/header.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+      .content {
+        background-color: #fff;
+        padding: 1px 0px 1px 0px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+    <link rel="stylesheet" href="http://localhost:3000/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="header"></div>
+      <div class="content">
+        <h2>Marketing</h2>
+        <div v-if="marketing.promoCodes.length">
+          <h3>Promo Codes</h3>
+          <ul>
+            <li v-for="promo in marketing.promoCodes" :key="promo.id">
+              {{ promo.code }} - {{ promo.description }} ({{
+                promo.discount_percentage }}% off)
+            </li>
+          </ul>
+        </div>
+        <div v-if="marketing.banners.length">
+          <h3>Banners</h3>
+          <ul>
+            <li v-for="banner in marketing.banners" :key="banner.id">
+              <strong>{{ banner.title }}</strong>: {{ banner.message }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="marketing.js"></script>
+    <script>
+      const app = Vue.createApp(marketingLogic);
+      app.mount("#app");
+    </script>
+  </body>
+</html>
