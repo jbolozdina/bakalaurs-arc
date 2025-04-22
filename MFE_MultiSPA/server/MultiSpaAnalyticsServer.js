@@ -21,7 +21,7 @@ let getSessionValidity;
     const SessionHelper = require('./temp/SessionHelper.js');
     getSessionValidity = SessionHelper.getSessionValidity;
 
-    console.log('Successfully loaded SessionHelper.js from monolith server');
+    console.log('Successfully loaded SessionHelper.js from main server');
   } catch (error) {
     console.error('Failed to download SessionHelper.js:', error);
     process.exit(1);

@@ -1,18 +1,18 @@
 <template>
   <div>
-    <h1>Products</h1>
-    <Products />
+    <h1>Analytics</h1>
+    <Analytics />
   </div>
 </template>
 
 <script>
-import Products from './components/Products.vue';
+import Analytics from "./components/Analytics.vue";
 
 export default {
   components: {
-    Products
-  }
-}
+    Analytics,
+  },
+};
 </script>
 
 <style>

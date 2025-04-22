@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>E-Commerce Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="header-left">
+          <h1>E-Commerce Dashboard</h1>
+        </div>
+        <div class="header-right" @click="toggleDropdown">
+          <i class="fas fa-user user-icon"></i>
+          <div class="dropdown" v-if="showDropdown">
+            <a href="#settings">Settings</a>
+            <a @click="logout">Log Out</a>
+          </div>
+        </div>
+      </header>
+      <div class="nav-buttons">
+          <button
+              class="nav-button"
+              :class="{active: currentSection === 'all'}"
+              @click="changeSection('all')"
+          >
+              All
+          </button>
+        <button
+          class="nav-button"
+          :class="{active: currentSection === 'products'}"
+          @click="changeSection('products')"
+        >
+          Products
+        </button>
+        <button
+          class="nav-button"
+          :class="{active: currentSection === 'orders'}"
+          @click="changeSection('orders')"
+        >
+          Orders
+        </button>
+        <button
+          class="nav-button"
+          :class="{active: currentSection === 'insights'}"
+          @click="changeSection('insights')"
+        >
+          Customer Analytics
+        </button>
+        <button
+          class="nav-button"
+          :class="{active: currentSection === 'marketing'}"
+          @click="changeSection('marketing')"
+        >
+          Marketing
+        </button>
+      </div>
+      <div class="content">
+        <div
+                v-if="currentSection === 'products' || currentSection === 'all'"
+        >
+          <h2>Products</h2>
+          <ul>
+            <li v-for="product in products" :key="product.id">
+              {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
+            </li>
+          </ul>
+        </div>
+        <div v-if="currentSection === 'orders' || currentSection === 'all'" style="margin-top: 16px;">
+          <h2>Orders</h2>
+          <ul>
+            <li v-for="order in orders" :key="order.id">
+              Order #{{ order.id }}: {{ order.customer }} - {{ order.status }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="currentSection === 'insights' || currentSection === 'all'" style="margin-top: 16px;">
+          <h2>Customer Analytics</h2>
+          <p>Total Customers: {{ insights.total_customers }}</p>
+          <p>New Customers: {{ insights.new_customers }}</p>
+          <p>Monthly Active: {{ insights.monthly_active }}</p>
+        </div>
+
+        <div v-if="currentSection === 'marketing' || currentSection === 'all'" style="margin-top: 16px;">
+          <h2>Marketing</h2>
+          <div v-if="marketing.promoCodes.length">
+            <h3>Promo Codes</h3>
+            <ul>
+              <li v-for="promo in marketing.promoCodes" :key="promo.id">
+                {{ promo.code }} - {{ promo.description }} ({{
+                promo.discount_percentage }}% off)
+              </li>
+            </ul>
+          </div>
+          <div v-if="marketing.banners.length">
+            <h3>Banners</h3>
+            <ul>
+              <li v-for="banner in marketing.banners" :key="banner.id">
+                <strong>{{ banner.title }}</strong>: {{ banner.message }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            currentSection: "all",
+            products: [],
+            orders: [],
+            insights: {},
+            marketing: { promoCodes: [], banners: [] },
+            showDropdown: false,
+          };
+        },
+        methods: {
+			logout() {
+				const url = "/api/revoke-me-auth-cookie";
+				axios.delete(url).then((res) => {
+					console.warn('secret cookie dookie removed');
+					location.reload();
+				});
+            },
+          toggleDropdown(event) {
+            this.showDropdown = !this.showDropdown;
+            event.stopPropagation();
+          },
+          closeDropdown() {
+            this.showDropdown = false;
+          },
+          changeSection(section) {
+            this.currentSection = section;
+            this.fetchData();
+            this.showDropdown = false;
+          },
+          fetchData() {
+            let url = "";
+            if (this.currentSection === "all") {
+              url = "/api/dashboard/all-data";
+              axios.get(url).then((res) => {
+                this.products = res.data.products;
+                this.orders = res.data.orders;
+				this.insights = res.data.insights;
+				this.marketing = {
+					promoCodes: res.data.promoCodes,
+                    banners: res.data.banners,
+                }
+              });
+            } else if (this.currentSection === "products") {
+              url = "/api/products";
+              axios.get(url).then((res) => {
+                  this.products = res.data;
+              });
+			} else if (this.currentSection === "orders") {
+              url = "/api/orders";
+              axios.get(url).then((res) => {
+                this.orders = res.data;
+              });
+            } else if (this.currentSection === "insights") {
+              url = "/api/customer-insights";
+              axios.get(url).then((res) => {
+                this.insights = res.data[0] || {};
+              });
+            } else if (this.currentSection === "marketing") {
+              url = "/api/marketing";
+              axios.get(url).then((res) => {
+                this.marketing = res.data;
+              });
+            }
+          },
+        },
+        mounted() {
+          this.fetchData();
+          // Close the dropdown on any click
+          document.addEventListener("click", this.closeDropdown);
+        },
+        beforeUnmount() {
+          document.removeEventListener("click", this.closeDropdown);
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

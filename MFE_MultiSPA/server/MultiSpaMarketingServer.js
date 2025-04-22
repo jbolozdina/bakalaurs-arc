@@ -10,7 +10,6 @@ let getSessionValidity;
     const response = await axios.get('http://localhost:3000/api/SessionHelper.js');
     const helperCode = response.data;
 
-    // Create a temporary file to store the downloaded code
     const tempDir = path.join(__dirname, 'temp');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
@@ -23,7 +22,7 @@ let getSessionValidity;
     const SessionHelper = require('./temp/SessionHelper.js');
     getSessionValidity = SessionHelper.getSessionValidity;
 
-    console.log('Successfully loaded SessionHelper.js from monolith server');
+    console.log('Successfully loaded SessionHelper.js from main server');
   } catch (error) {
     console.error('Failed to download SessionHelper.js:', error);
     process.exit(1);

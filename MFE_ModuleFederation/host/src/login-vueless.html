@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>[Unlogged] E-Commerce Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="app" style="width: 100%; height: 100%" class="content">
+      <p>You're invalid! (No active user session)</p>
+      <button class="nav-button" @click="isModalShown = true">Log in</button>
+      <button class="nav-button" @click="addSecretCookie">I have a cookie. I don't know how I got here.</button>
+      <div v-if="isModalShown" style="position: absolute; width: 50%; height: 500px; background: white; top: 128px">
+          <button @click="isModalShown = false">X</button>
+          <div style="margin-left: 33%; margin-top: 20%">
+            <p>user</p>
+            <input v-model="username" type="text">
+            <p>pass</p>
+            <input v-model="password" type="text">
+            <div style="padding-top: 16px">
+                <button class="nav-button" @click="attemptLogin">Continue</button>
+            </div>
+            <div v-if="error" style="color: red;">{{ error }}</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="login-vueless.js"></script>
+    <script>
+      const app = Vue.createApp(invalidUserLogic);
+      app.mount("#app");
+    </script>
+  </body>
+</html>

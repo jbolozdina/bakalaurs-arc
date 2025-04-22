@@ -9,7 +9,7 @@ module.exports = {
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/static/'
+    publicPath: 'http://localhost:3002/'
   },
   resolve: {
     extensions: ['.js', '.vue']
@@ -29,13 +29,10 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new ModuleFederationPlugin({
-      name: 'host',
+      name: 'orders',
       filename: 'remoteEntry.js',
-      remotes: {
-        products: 'products@http://localhost:3001/remoteEntry.js',
-        orders: 'orders@http://localhost:3002/remoteEntry.js',
-        analytics: 'analytics@http://localhost:3003/remoteEntry.js',
-        marketing: 'marketing@http://localhost:3004/remoteEntry.js',
+      exposes: {
+        './Orders': './src/components/Orders.vue'
       },
       shared: {
         vue: {
@@ -53,7 +50,7 @@ module.exports = {
     })
   ],
   devServer: {
-    port: 8080,
+    port: 8081,
     historyApiFallback: true,
     headers: {
       "Access-Control-Allow-Origin": "*"

@@ -1,52 +1,56 @@
 <template>
-  <div class="content">
+  <div v-if="products.length && !isLoading" class="content">
     <h2>Products</h2>
+    <h4>{{ customText }}</h4>
     <ul class="product-list">
       <li v-for="product in products" :key="product.id">
         {{ product.name }} - ${{ parseFloat(product.price).toFixed(2) }}
       </li>
     </ul>
   </div>
+  <div v-else class="fa fa-spinner fa-spin">
+  </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, defineExpose } from "vue";
+import axios from "axios";
 
 export default {
+  props: {
+    customText: {
+      type: String,
+      default: "nothing passed...",
+    },
+  },
   setup() {
     const products = ref([]);
+    const isLoading = ref(true);
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/products');
+        isLoading.value = true;
+        const response = await axios.get("http://localhost:3000/api/products");
         products.value = response.data;
+        isLoading.value = false;
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       }
     };
 
-    // Listen for messages from the host application
-    const setupMessageListener = () => {
-      window.addEventListener('message', (event) => {
-        console.log('Message received in ProductsComponent:', event.data);
-        // You can handle specific messages here
-        if (event.data.isUserLoggedIn) {
-          console.log('User is logged in:', event.data.isUserLoggedIn);
-        }
-      });
-    };
+    defineExpose({ fetchData });
 
     onMounted(() => {
       fetchData();
-      setupMessageListener();
     });
 
     return {
-      products
+      isLoading,
+      products,
+      fetchData,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

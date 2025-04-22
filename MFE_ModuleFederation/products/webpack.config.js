@@ -4,11 +4,12 @@ const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
 
 module.exports = {
+  context: path.resolve(__dirname),
   entry: './src/index.js',
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: 'http://localhost:8081/'
+    publicPath: 'http://localhost:3001/'
   },
   resolve: {
     extensions: ['.js', '.vue']
@@ -31,7 +32,7 @@ module.exports = {
       name: 'products',
       filename: 'remoteEntry.js',
       exposes: {
-        './ProductsComponent': './src/components/ProductsComponent.vue'
+        './Products': './src/components/Products.vue'
       },
       shared: {
         vue: {

@@ -1,18 +1,18 @@
 <template>
   <div>
-    <h1>Products</h1>
-    <Products />
+    <h1>Marketing</h1>
+    <Marketing />
   </div>
 </template>
 
 <script>
-import Products from './components/Products.vue';
+import Marketing from "./components/Marketing.vue";
 
 export default {
   components: {
-    Products
-  }
-}
+    Marketing,
+  },
+};
 </script>
 
 <style>

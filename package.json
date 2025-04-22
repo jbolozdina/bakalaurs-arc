@@ -9,11 +9,21 @@
     "http-proxy-middleware": "^3.0.5",
     "mysql2": "^3.14.0",
     "sabik": "^0.2.4",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "webpack-dev-middleware": "^7.4.2"
   },
   "devDependencies": {
     "prettier": "3.5.3",
-    "webpack": "^5.98.0"
+    "webpack": "^5.98.0",
+    "@babel/core": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
+    "style-loader": "^3.3.3",
+    "vue-loader": "^17.3.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
     "complexity-report": "./node_modules/.bin/es6-plato -r -d ./report src"
