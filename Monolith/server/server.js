@@ -68,6 +68,10 @@ app.get("/style.css", (req, res) => {
   res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\Monolith\\public\\style.css");
 });
 
+app.get("/index.js", (req, res) => {
+  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\Monolith\\public\\index.js");
+});
+
 const MySqlHelper = require("./MySqlHelper");
 const argon2 = require("argon2");
 MySqlHelper.openConnection();

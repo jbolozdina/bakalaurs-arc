@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const argon2 = require("argon2");
 
-const DB_SETUP_REQUIRED = true;
+const DB_REFRESH = true;
 
 /** -- CONNECT CONFIG DETAILS -- */
 const PORT = 3000;
@@ -19,12 +19,15 @@ const APP_URL = `http://localhost:${PORT}`;
 // DB_USERNAME=root
 // DB_PASSWORD=1234
 
-const initDB = async () => {
+const refreshDB = async () => {
   await (require("./helpers/MigrationHelper")).createTables();
-  await (require("./helpers/SeederHelper")).insertSampleData();
+
+  const SeederHelper = require("./helpers/SeederHelper");
+  await SeederHelper.clearAllButUserData();
+  await SeederHelper.insertSampleData();
 };
 
-if (DB_SETUP_REQUIRED) initDB();
+if (DB_REFRESH) refreshDB();
 
 console.warn(__dirname);
 
@@ -77,8 +80,20 @@ app.get("/iframetest", async (req, res) => {
   res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\iframe-test.html"));
 });
 
+app.get("/iframe-test.js", async (req, res) => {
+  // await MySqlHelper.connection.promise().query(`UPDATE session_cookies SET last_access = ${Date.now()} WHERE hash = ${sessionId}`);
+
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\iframe-test.js"));
+});
+
+
+
 app.get("/no-login", (req, res) => {
   res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\invalid-user.html"));
+});
+
+app.get("/invalid-user.js", (req, res) => {
+  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\invalid-user.js"));
 });
 
 app.get("/style.css", (req, res) => {
@@ -89,6 +104,7 @@ app.use(express.json());
 
 
 const MySqlHelper = require("./helpers/MySqlHelper");
+const SeederHelper = require("../../MFE_ModuleFederation/host/helpers/SeederHelper");
 MySqlHelper.openConnection();
 
 app.post("/api/login", async (req, res) => {
@@ -158,6 +174,16 @@ app.get("/api/dashboard/all-data", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/fill-random-data", async (req, res) => {
+  console.warn('/api/fill-random-data accessed');
+  try {
+    await SeederHelper.insertRandomData();
+    res.json({ success: 1 });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });

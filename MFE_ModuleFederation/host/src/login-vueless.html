@@ -15,7 +15,7 @@
     <div id="app" style="width: 100%; height: 100%" class="content">
       <p>You're invalid! (No active user session)</p>
       <button class="nav-button" @click="isModalShown = true">Log in</button>
-      <button class="nav-button" @click="addSecretCookie">I have a cookie. I don't know how I got here.</button>
+      <button class="nav-button" @click="teleportMe">I have a cookie. I don't know how I got here.</button>
       <div v-if="isModalShown" style="position: absolute; width: 50%; height: 500px; background: white; top: 128px">
           <button @click="isModalShown = false">X</button>
           <div style="margin-left: 33%; margin-top: 20%">

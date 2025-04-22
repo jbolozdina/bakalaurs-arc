@@ -5,6 +5,10 @@
     <title>E-Commerce Dashboard</title>
     <script src="https://unpkg.com/vue@3"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      />
       <style>
           body {
               margin: 0;
@@ -25,8 +29,9 @@
   </head>
   <body>
     <div id="app">
-      <div class="content">
+      <div v-if="marketing.promoCodes.length && marketing.banners.length && !isLoading" class="content">
           <h2>Marketing</h2>
+          <h4>{{ customText }}</h4>
           <div v-if="marketing.promoCodes.length">
               <h3>Promo Codes</h3>
               <ul>
@@ -45,28 +50,10 @@
               </ul>
           </div>
       </div>
+      <div v-else class="fa fa-spinner fa-spin"></div>
     </div>
 
-    <script>
-      const app = Vue.createApp({
-        data() {
-          return {
-            marketing: { promoCodes: [], banners: [] },
-          };
-        },
-        methods: {
-          fetchData() {
-			  axios.get('http://localhost:3000/api/marketing').then((res) => {
-				  this.marketing = res.data;
-			  });
-          },
-        },
-        mounted() {
-          this.fetchData();
-			window.addEventListener("message", (event) => { console.log(event.data, event.origin); console.log('labdien. reading data; is logged in?', event.data.isUserLoggedIn) });
-        },
-      });
-      app.mount("#app");
+    <script src="marketing.js">
     </script>
   </body>
 </html>

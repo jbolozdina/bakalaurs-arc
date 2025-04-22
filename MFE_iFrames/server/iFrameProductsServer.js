@@ -8,7 +8,11 @@ const APP_URL = `http://localhost:${PORT}`;
 /** -- CONNECT CONFIG DETAILS -- */
 
 app.get("/products", (req, res) => {
-  res.sendFile(path.join("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\products.html"));
+  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\products.html");
+});
+
+app.get("/products.js", (req, res) => {
+  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\MFE_iFrames\\public\\products.js");
 });
 
 app.listen(PORT, () => {

@@ -64,143 +64,46 @@
         </button>
       </div>
       <div class="content">
+        <button class="nav-button" @click="sendFillRefreshDataSignalToAll">Fill (not yet) & refresh em all!</button>
         <div
                 v-if="currentSection === 'products' || currentSection === 'all'"
                 style="border-style: dotted"
         >
-            <div>
-                <iframe id="i-products" src="http://localhost:3001/products" style="width: 100%; height: 100%"></iframe>
-                <button @click="labdieniFrameProducts()">labdien</button>
+            <div v-show="!iFrameProductsLoading">
+                <iframe @load="() => iFrameProductsLoading = false" id="i-products" src="http://localhost:3001/products" style="width: 100%; height: 100%"></iframe>
+                <div class="fa fa-refresh" @click="labdieniFrameProducts()"></div>
             </div>
+            <div v-show="iFrameProductsLoading"><div class="fa fa-spinner fa-spin"></div> Loading Products...</div>
 <!--          <iframe src="https://google.com" width="400" height="400"></iframe>-->
         </div>
 
         <div v-if="currentSection === 'orders' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px;">
-            <div>
-                <iframe id="i-orders" src="http://localhost:3002/orders" style="width: 100%; height: 100%"></iframe>
-                <button @click="labdieniFrameOrders()">labdien</button>
+            <div v-show="!iFrameOrdersLoading">
+                <iframe @load="iFrameOrdersLoading = false" id="i-orders" src="http://localhost:3002/orders" style="width: 100%; height: 100%"></iframe>
+                <div class="fa fa-refresh" @click="labdieniFrameOrders()"></div>
             </div>
+            <div v-show="iFrameOrdersLoading"><div class="fa fa-spinner fa-spin"></div> Loading Orders...</div>
         </div>
 
         <div v-if="currentSection === 'insights' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px;">
-            <div>
-                <iframe id="i-analytics" src="http://localhost:3003/analytics" style="width: 100%; height: 100%"></iframe>
-                <button @click="labdieniFrameAnalytics()">labdien</button>
+            <div v-show="!iFrameAnalyticsLoading">
+                <iframe @load="iFrameAnalyticsLoading = false" id="i-analytics" src="http://localhost:3003/analytics" style="width: 100%; height: 100%"></iframe>
+                <div class="fa fa-refresh" @click="labdieniFrameAnalytics()"></div>
             </div>
+            <div v-show="iFrameAnalyticsLoading"><div class="fa fa-spinner fa-spin"></div> Loading Analytics...</div>
         </div>
 
         <div v-if="currentSection === 'marketing' || currentSection === 'all'" style="border-style: dotted; margin-top: 16px; height:100%">
-            <div>
-                <iframe id="i-marketing" src="http://localhost:3004/marketing" style="width: 100%; height: 100%"></iframe>
-                <button @click="labdieniFrameMarketing()">labdien</button>
+            <div v-show="!iFrameMarketingLoading">
+                <iframe @load="iFrameMarketingLoading = false" id="i-marketing" src="http://localhost:3004/marketing" style="width: 100%; height: 100%"></iframe>
+                <div class="fa fa-refresh" @click="labdieniFrameMarketing()"></div>
             </div>
+            <div v-show="iFrameMarketingLoading"><div class="fa fa-spinner fa-spin"></div> Loading Marketing...</div>
         </div>
       </div>
     </div>
 
-    <script>
-      const app = Vue.createApp({
-        data() {
-          return {
-            currentSection: "all",
-            products: [],
-            orders: [],
-            insights: {},
-            marketing: { promoCodes: [], banners: [] },
-            showDropdown: false,
-            iProductsWindow: null,
-          };
-        },
-        methods: {
-			labdieniFrameProducts() {
-				document.getElementById('i-products').contentWindow.postMessage(
-					{ message: 'labdien!', isUserLoggedIn: true },
-                    "http://localhost:3001"
-                );
-            },
-			labdieniFrameOrders() {
-				document.getElementById('i-orders').contentWindow.postMessage(
-					{ message: 'labdien!', isUserLoggedIn: true },
-					"http://localhost:3002"
-				);
-			},
-			labdieniFrameAnalytics() {
-				document.getElementById('i-analytics').contentWindow.postMessage(
-					{ message: 'labdien!', isUserLoggedIn: true },
-					"http://localhost:3003"
-				);
-			},
-			labdieniFrameMarketing() {
-				document.getElementById('i-marketing').contentWindow.postMessage(
-					{ message: 'labdien!', isUserLoggedIn: true },
-					"http://localhost:3004"
-				);
-			},
-			logout() {
-				const url = "/api/revoke-me-auth-cookie";
-				axios.delete(url).then((res) => {
-					console.warn('secret cookie dookie removed');
-					location.reload();
-				});
-            },
-          toggleDropdown(event) {
-            this.showDropdown = !this.showDropdown;
-            event.stopPropagation();
-          },
-          closeDropdown() {
-            this.showDropdown = false;
-          },
-          changeSection(section) {
-            this.currentSection = section;
-            // this.fetchData();
-            this.showDropdown = false;
-          },
-          // fetchData() {
-          //   let url = "";
-          //   if (this.currentSection === "all") {
-          //     url = "/api/dashboard/all-data";
-          //     axios.get(url).then((res) => {
-          //       this.products = res.data.products;
-          //       this.orders = res.data.orders;
-			// 	this.insights = res.data.insights;
-			// 	this.marketing = {
-			// 		promoCodes: res.data.promoCodes,
-          //           banners: res.data.banners,
-          //       }
-          //     });
-          //   } else if (this.currentSection === "products") {
-          //     url = "/api/products";
-          //     axios.get(url).then((res) => {
-          //         this.products = res.data;
-          //     });
-			// } else if (this.currentSection === "orders") {
-          //     url = "/api/orders";
-          //     axios.get(url).then((res) => {
-          //       this.orders = res.data;
-          //     });
-          //   } else if (this.currentSection === "insights") {
-          //     url = "/api/customer-insights";
-          //     axios.get(url).then((res) => {
-          //       this.insights = res.data[0] || {};
-          //     });
-          //   } else if (this.currentSection === "marketing") {
-          //     url = "/api/marketing";
-          //     axios.get(url).then((res) => {
-          //       this.marketing = res.data;
-          //     });
-          //   }
-          // },
-        },
-        mounted() {
-          // this.fetchData();
-          // Close the dropdown on any click
-          document.addEventListener("click", this.closeDropdown);
-        },
-        beforeUnmount() {
-          document.removeEventListener("click", this.closeDropdown);
-        },
-      });
-      app.mount("#app");
+    <script src="iframe-test.js">
     </script>
 
   </body>
