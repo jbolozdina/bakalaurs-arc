@@ -13,7 +13,6 @@ const PORT = 3003;
 const APP_URL = `http://localhost:${PORT}`;
 /** -- CONNECT CONFIG DETAILS -- */
 
-
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
