@@ -4,19 +4,21 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const DB_SETUP_REQUIRED = true;
+const SHOULD_REFRESH_DB = true;
 
 /** -- CONNECT CONFIG DETAILS -- */
 const PORT = 3000;
 const APP_URL = `http://localhost:${PORT}`;
 /** -- CONNECT CONFIG DETAILS -- */
 
-const initDB = async () => {
+const SeederHelper = require("./SeederHelper");
+const refreshDB = async () => {
   await (require("./MigrationHelper")).createTables();
-  await (require("./SeederHelper")).insertSampleData();
+  await SeederHelper.clearAllButUserData();
+  await SeederHelper.insertSampleData();
 };
 
-if (DB_SETUP_REQUIRED) initDB();
+if (SHOULD_REFRESH_DB) refreshDB();
 
 console.warn(__dirname);
 
@@ -138,6 +140,16 @@ app.get("/api/dashboard/all-data", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/fill-random-data", async (req, res) => {
+  console.warn('/api/fill-random-data accessed');
+  try {
+    await SeederHelper.insertRandomData();
+    res.json({ success: 1 });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });

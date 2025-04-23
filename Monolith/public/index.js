@@ -29,6 +29,16 @@ const app = Vue.createApp({
       this.fetchData();
       this.showDropdown = false;
     },
+    fillAllAndReload() {
+      axios.post('/api/fill-random-data')
+        .then(() => {
+          console.warn('data in');
+        })
+        .catch(err => {
+          console.error('Failed to fill data:', err);
+        });
+      setTimeout(() => { location.reload(); }, 1000);
+    },
     fetchData() {
       let url = "";
       if (this.currentSection === "all") {
