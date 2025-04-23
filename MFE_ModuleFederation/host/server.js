@@ -96,9 +96,9 @@ app.post("/api/login", async (req, res) => {
     VALUES ('${sessHash}', ${userIdRow[0].id})
   `);
   res.cookie('sessionId', sessHash,
-    {
-      sameSite: 'lax'
-    }
+    // {
+    //   sameSite: 'lax'
+    // }
   );
 
   res.json({ message: 'authenticated & cookie baked in!', data: { userId: userIdRow[0].id } });

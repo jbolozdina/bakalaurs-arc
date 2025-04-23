@@ -4,6 +4,8 @@ const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
+  devtool: 'source-map',
   context: path.resolve(__dirname),
   entry: './src/index.js',
   output: {
