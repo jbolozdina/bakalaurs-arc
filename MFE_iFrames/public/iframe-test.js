@@ -21,16 +21,26 @@ const app = Vue.createApp({
         3003: document.getElementById('i-analytics'),
         3004: document.getElementById('i-marketing'),
       };
-      for (const [port, iFrame] of Object.entries(allIframes)) {
-        iFrame.contentWindow.postMessage(
-          { method: 'refreshData', customText: 'This text is received from host (clicked refresh all)!' },
-          `http://localhost:${port}`
-        );
-      }
       const url = "/api/fill-random-data";
       axios.post(url).then((res) => {
         console.warn('data in');
       });
+      this.iFrameProductsLoading = true;
+      this.iFrameOrdersLoading = true;
+      this.iFrameAnalyticsLoading = true;
+      this.iFrameMarketingLoading = true;
+      setTimeout(() => {
+        for (const [port, iFrame] of Object.entries(allIframes)) {
+          iFrame.contentWindow.postMessage(
+            { method: 'refreshData', customText: 'This text is received from host (clicked refresh all)!' },
+            `http://localhost:${port}`
+          );
+        }
+        this.iFrameProductsLoading = false;
+        this.iFrameOrdersLoading = false;
+        this.iFrameAnalyticsLoading = false;
+        this.iFrameMarketingLoading = false;
+      }, 1000);
     },
     labdieniFrameProducts() {
       document.getElementById('i-products').contentWindow.postMessage(
