@@ -73,6 +73,9 @@ app.get("/style.css", (req, res) => {
 app.get("/index.js", (req, res) => {
   res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\Monolith\\public\\index.js");
 });
+app.get("/invalid-user.js", (req, res) => {
+  res.sendFile("C:\\Users\\jbolo\\WebstormProjects\\bakalaurs-arc\\Monolith\\public\\invalid-user.js");
+});
 
 const MySqlHelper = require("./MySqlHelper");
 const argon2 = require("argon2");
