@@ -1,4 +1,3 @@
-import { ref, onMounted, defineExpose } from "vue";
 import axios from "axios";
 
 export default {
@@ -8,30 +7,26 @@ export default {
       default: "nothing passed...",
     },
   },
-  setup() {
-    const orders = ref([]);
-    const isLoading = ref(true);
-
-    const fetchData = async () => {
-      try {
-        isLoading.value = true;
-        const response = await axios.get("http://localhost:3000/api/orders");
-        orders.value = response.data;
-        isLoading.value = false;
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    defineExpose({ fetchData });
-
-    onMounted(() => {
-      fetchData();
-    });
-
+  data() {
     return {
-      orders,
-      fetchData,
+      orders: [],
+      isLoading: true,
     };
+  },
+  methods: {
+    async fetchData() {
+      try {
+        this.isLoading = true;
+        const response = await axios.get("http://localhost:3000/api/orders");
+        this.orders = response.data;
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+  mounted() {
+    this.fetchData();
   },
 };

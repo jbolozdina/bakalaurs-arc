@@ -1,4 +1,3 @@
-import { ref, onMounted, defineExpose } from "vue";
 import axios from "axios";
 
 export default {
@@ -8,31 +7,28 @@ export default {
       default: "nothing passed...",
     },
   },
-  setup() {
-    const insights = ref(null);
-    const loading = ref(true);
-
-    const fetchData = async () => {
+  data() {
+    return {
+      insights: null,
+      loading: true,
+    };
+  },
+  methods: {
+    async fetchData() {
       try {
-        loading.value = true;
-        const response = await axios.get("http://localhost:3000/api/customer-insights");
-        insights.value = response.data[0];
-        loading.value = false;
+        this.loading = true;
+        const response = await axios.get(
+          "http://localhost:3000/api/customer-insights"
+        );
+        this.insights = response.data[0];
       } catch (error) {
         console.error("Error fetching insights:", error);
+      } finally {
+        this.loading = false;
       }
-    };
-
-    onMounted(() => {
-      fetchData();
-    });
-
-    defineExpose({ fetchData });
-
-    return {
-      insights,
-      loading,
-      fetchData,
-    };
+    },
+  },
+  mounted() {
+    this.fetchData();
   },
 };

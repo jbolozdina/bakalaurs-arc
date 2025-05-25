@@ -1,4 +1,3 @@
-import { ref, onMounted, defineExpose } from "vue";
 import axios from "axios";
 
 export default {
@@ -8,30 +7,26 @@ export default {
       default: "nothing passed...",
     },
   },
-  setup() {
-    const marketing = ref([]);
-    const isLoading = ref(true);
-
-    const fetchData = async () => {
+  data() {
+    return {
+      marketing: [],
+      isLoading: true,
+    };
+  },
+  methods: {
+    async fetchData() {
       try {
-        isLoading.value = true;
+        this.isLoading = true;
         const response = await axios.get("http://localhost:3000/api/marketing");
-        marketing.value = response.data;
-        isLoading.value = false;
+        this.marketing = response.data;
       } catch (error) {
         console.error("Error fetching marketing data:", error);
+      } finally {
+        this.isLoading = false;
       }
-    };
-
-    defineExpose({ fetchData });
-
-    onMounted(() => {
-      fetchData();
-    });
-
-    return {
-      marketing,
-      fetchData,
-    };
+    },
+  },
+  mounted() {
+    this.fetchData();
   },
 };
